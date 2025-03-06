@@ -1,6 +1,6 @@
 package vn.hoangdung.controller;
 
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import vn.hoangdung.dto.request.UserRequestDTO;
 
 @RestController
@@ -27,20 +28,14 @@ public class UserController {
     public UserRequestDTO getUser(@PathVariable int userId) {
 
         System.out.println("User ID: " + userId);
-        return new UserRequestDTO("Hoang", "Dung", "0123456789", "NzjBv@example.com");
+        return new UserRequestDTO("Hoang", "Dung", "0123456789", "NzjBv@example.com", null);
     }
 
     @GetMapping("/list")
-    public List<UserRequestDTO> getUserList(
-            @RequestParam(required = false) String email,
-            @RequestParam(defaultValue = "0") int pageNO, 
-            @RequestParam(defaultValue = "10") int pageSize) {
-
-        return Arrays.asList(
-            new UserRequestDTO("Hoang", "Dung", "0123456789", "NzjBv@example.com"),
-            new UserRequestDTO("Hoang", "Dung", "0123456789", "NzjBv@example.com"),
-            new UserRequestDTO("Hoang", "Dung", "0123456789", "NzjBv@example.com")
-        );
+    public List<UserRequestDTO> getAllUser(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                           @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize) {
+        return List.of(new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789", new Date()),
+                new UserRequestDTO("Leo", "Messi", "leomessi@email.com", "0123456456", new Date()));
     }
 
     @PostMapping("/")
@@ -70,7 +65,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public String deleteUser(@PathVariable int userId) {
+    public String deleteUser(@Min(1) @PathVariable int userId) {
 
         System.out.println("User ID: " + userId);
 

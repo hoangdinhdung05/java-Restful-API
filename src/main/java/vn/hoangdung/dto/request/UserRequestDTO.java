@@ -2,10 +2,18 @@ package vn.hoangdung.dto.request;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
+// import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import vn.hoangdung.util.PhoneNumber;
+
+import java.util.Date;
+
+
 
 public class UserRequestDTO implements Serializable{
     
@@ -16,17 +24,27 @@ public class UserRequestDTO implements Serializable{
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone is not valid")
+    // @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone is not valid")
+    //Viết validate phone bằng annotation
+    @PhoneNumber
     private String phone;
 
     @Email(message = "Email is not valid")
     private String email;
+
+    @NotNull(message = "dateOfBirth must be not null")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date dateOfBirth;
     
-    public UserRequestDTO(String firstName, String lastName, String phone, String email) {
+    // @NotEmpty(message = "addresses can not empty")
+    // private Set<Address> addresses;
+
+    public UserRequestDTO(String firstName, String lastName, String phone, String email, Date dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.email = email;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getFirstName() {
@@ -61,6 +79,12 @@ public class UserRequestDTO implements Serializable{
         this.email = email;
     }
 
-    
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
 }
