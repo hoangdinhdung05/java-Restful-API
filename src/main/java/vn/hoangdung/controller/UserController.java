@@ -22,7 +22,6 @@ import vn.hoangdung.dto.response.ResponseFailure;
 import vn.hoangdung.dto.response.ResponseSuccess;
 import vn.hoangdung.service.UserService;
 
-
 @RestController
 @RequestMapping("/user")
 @Validated
@@ -82,7 +81,7 @@ public class UserController {
         System.out.println("Request get user detail, userId=" + userId);
 
         try {
-            return new ResponseSuccess(HttpStatus.OK, "user", new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789"));
+            return new ResponseSuccess(HttpStatus.OK, "user", new UserRequestDTO("Dung", "Hoang", "admin@tayjava.vn", "0123456789"));
         } catch (Exception e) {
             return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
         }
