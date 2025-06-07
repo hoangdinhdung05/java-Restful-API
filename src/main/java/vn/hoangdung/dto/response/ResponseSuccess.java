@@ -2,38 +2,50 @@ package vn.hoangdung.dto.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.util.MultiValueMap;
 
 public class ResponseSuccess extends ResponseEntity<ResponseSuccess.Payload> {
 
-
-    //Mô tả dữ liệu trả về cho các API: PUT / PATHCH / DELETE
     public ResponseSuccess(HttpStatus status, String message) {
         super(new Payload(status.value(), message), HttpStatus.OK);
-        //HttpStatus.OK ở đây là in ra data dạng json
-        //còn thay bằng status thì chỉ in ra trạng thái
     }
 
-    //Mô tả dữ liệu trả về cho các API: GET / POST
     public ResponseSuccess(HttpStatus status, String message, Object data) {
-        super(new Payload(status.value(), message, data), HttpStatus.OK);
+        super(new Payload(status.value(), message, data), status);
     }
 
-    
-    public static class Payload {
+    public ResponseSuccess(Payload body, HttpStatus status) {
+        super(body, status);
+    }
 
+    public ResponseSuccess(MultiValueMap<String, String> headers, HttpStatus status) {
+        super(headers, status);
+    }
+
+    public ResponseSuccess(Payload payload, MultiValueMap<String, String> headers, int rawStatus) {
+        super(payload, headers, rawStatus);
+    }
+
+    public ResponseSuccess(Payload payload, MultiValueMap<String, String> headers, HttpStatus status) {
+        super(payload, headers, status);
+    }
+
+    public static class Payload {
         private final int status;
         private final String message;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private Object data;
+
+        public Payload(int status, String message) {
+            this.status = status;
+            this.message = message;
+        }
 
         public Payload(int status, String message, Object data) {
             this.status = status;
             this.message = message;
             this.data = data;
-        }
-
-        public Payload(int status, String message) {
-            this.status = status;
-            this.message = message;
         }
 
         public int getStatus() {
@@ -47,11 +59,5 @@ public class ResponseSuccess extends ResponseEntity<ResponseSuccess.Payload> {
         public Object getData() {
             return data;
         }
-
-        public void setData(Object data) {
-            this.data = data;
-        }        
-
     }
-
 }

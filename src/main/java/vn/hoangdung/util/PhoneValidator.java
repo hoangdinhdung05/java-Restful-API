@@ -5,11 +5,12 @@ import jakarta.validation.ConstraintValidatorContext;
 
 //Viết validate phone bằng annotation
 //Định nghĩa class PhoneValidator implement ConstraintValidator
-
 public class PhoneValidator implements ConstraintValidator<PhoneNumber, String> {
 
     @Override
     public void initialize(PhoneNumber phoneNumberNo) {
+        // Phương thức này có thể để trống hoặc thực hiện các khởi tạo cần thiết
+        // cho validator, nhưng trong trường hợp này không cần thiết.
     }
 
     @Override
@@ -24,8 +25,7 @@ public class PhoneValidator implements ConstraintValidator<PhoneNumber, String> 
             //validating phone number with extension length from 3 to 5
         else //return false if nothing matches the input
             if(phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}")) return true;
-            //validating phone number where area code is in braces ()
-        else return phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}");
+                //validating phone number where area code is in braces ()
+            else return phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}");
     }
-    
 }

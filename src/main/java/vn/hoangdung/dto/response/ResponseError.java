@@ -1,9 +1,8 @@
 package vn.hoangdung.dto.response;
 
-public class ResponseError extends ResponseData<String> {
-    
+public class ResponseError extends ResponseData {
+
     public ResponseError(int status, String message) {
         super(status, message);
     }
-
 }

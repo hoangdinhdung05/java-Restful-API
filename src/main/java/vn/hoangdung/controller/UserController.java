@@ -1,6 +1,5 @@
 package vn.hoangdung.controller;
 
-import java.util.Date;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,103 +16,75 @@ import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import vn.hoangdung.dto.request.UserRequestDTO;
-import vn.hoangdung.dto.response.ResponseData;
-import vn.hoangdung.dto.response.ResponseError;
-
+import vn.hoangdung.dto.response.ResponseFailure;
+import vn.hoangdung.dto.response.ResponseSuccess;
 
 
 @RestController
 @RequestMapping("/user")
 @Validated
 public class UserController {
-    
-    //Viết các API CRUD 
 
-    @GetMapping("/{userId}")
-    // @ResponseStatus(HttpStatus.OK)
-    public ResponseData<UserRequestDTO> getUser(@PathVariable @Min(1) int userId) {
-
-        System.out.println("User ID: " + userId);
-
-        return new ResponseData<>(HttpStatus.OK.value(), "user", new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789", new Date()));
-    }
-
-    @GetMapping("/list")
-    // @ResponseStatus(HttpStatus.OK)
-    public ResponseData<List<UserRequestDTO>> getAllUser(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                           @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize) {
-        return new ResponseData<>(HttpStatus.OK.value(), "list user", List.of(new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789", new Date()),
-        new UserRequestDTO("Leo", "Messi", "leomessi@email.com", "0123456456", new Date())));
-    }
-
-    // @Operation(summary = "summary", description = "description", responses = {
-    //     @ApiResponse(responseCode = "201", description = "User created",
-    //         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-    //         examples = @ExampleObject(name = "ex name", summary = "ex summary", 
-    //                                     value = """
-    //                                             {
-    //                                                 "status": 201,
-    //                                                 "message": "Test API add user",
-    //                                                 "data": 1
-    //                                             }
-    //                                             """)))
-    
-    // })
-    //Cách 1: Dùng docstring
-    //Cách 2: Dùng annotation
-    //Cách 3: Dùng @Operation
     @PostMapping("/")
-    public ResponseError addUser(@RequestBody @Valid UserRequestDTO userRequestDTO) {
-        System.out.println("User: " + userRequestDTO);
+    public ResponseSuccess addUser(@Valid @RequestBody UserRequestDTO user) {
+        System.out.println("Request add user " + user.getFirstName());
 
-        //TH lỗi
-        return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Call not create User");
-
-        // return new ResponseData<>(HttpStatus.CREATED.value(), "Test API add user", 1);
+        try {
+            return new ResponseSuccess(HttpStatus.CREATED, "User added successfully,", 1);
+        } catch (Exception e) {
+            return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
-    // @Operation(summary = "summary", description = "description", responses = {
-    //     @ApiResponse(responseCode = "202", description = "User updated",
-    //         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-    //         examples = @ExampleObject(name = "ex name", summary = "ex summary", 
-    //                                     value = """
-    //                                             {
-    //                                                 "status": 202,
-    //                                                 "message": "Test API put user",
-    //                                                 "data": null
-    //                                             }
-    //                                             """)))
-    
-    // })
     @PutMapping("/{userId}")
-    public ResponseData<?> updateUser(@PathVariable int userId, @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseSuccess updateUser(@PathVariable @Min(1) int userId, @Valid @RequestBody UserRequestDTO user) {
+        System.out.println("Request update userId=" + userId);
 
-        System.out.println("User ID: " + userId);
-
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Test API update user");
+        try {
+            return new ResponseSuccess(HttpStatus.ACCEPTED, "User updated successfully");
+        } catch (Exception e) {
+            return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
-
 
     @PatchMapping("/{userId}")
-    // @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseData<?> changeStatus(@PathVariable int userId, @RequestParam(required = false) boolean status) {
-        
-        //localhost:8080/user/1?status=true
+    public ResponseSuccess updateStatus(@Min(1) @PathVariable int userId, @RequestParam boolean status) {
+        System.out.println("Request change status, userId=" + userId);
 
-        System.out.println("User ID: " + userId);
-        System.out.println("Status: " + status);
-
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Test API patch user");
+        try {
+            return new ResponseSuccess(HttpStatus.ACCEPTED, "User's status changed successfully");
+        } catch (Exception e) {
+            return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @DeleteMapping("/{userId}")
-    // @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseData<?> deleteUser(@Min(1) @PathVariable int userId) {
+    public ResponseSuccess deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
+        System.out.println("Request delete userId=" + userId);
 
-        System.out.println("User ID: " + userId);
-
-        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Test API delete user");
+        try {
+            return new ResponseSuccess(HttpStatus.NO_CONTENT, "User deleted successfully");
+        } catch (Exception e) {
+            return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
+    @GetMapping("/{userId}")
+    public ResponseSuccess getUser(@PathVariable @Min(1) int userId) {
+        System.out.println("Request get user detail, userId=" + userId);
 
+        try {
+            return new ResponseSuccess(HttpStatus.OK, "user", new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789"));
+        } catch (Exception e) {
+            return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/list")
+    public ResponseSuccess getAllUser(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                      @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize) {
+        System.out.println("Request get all of users");
+        return new ResponseSuccess(HttpStatus.OK, "users", List.of(new UserRequestDTO("Tay", "Java", "admin@tayjava.vn", "0123456789"),
+                new UserRequestDTO("Leo", "Messi", "leomessi@email.com", "0123456456")));
+    }
 }

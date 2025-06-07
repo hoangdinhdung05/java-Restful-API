@@ -1,15 +1,12 @@
 package vn.hoangdung.dto.request;
 
 import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-// import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 import vn.hoangdung.util.EnumPattern;
 import vn.hoangdung.util.EnumValue;
 import vn.hoangdung.util.Gender;
@@ -17,57 +14,58 @@ import vn.hoangdung.util.GenderSubset;
 import vn.hoangdung.util.PhoneNumber;
 import vn.hoangdung.util.UserStatus;
 import vn.hoangdung.util.UserType;
-
 import java.util.Set;
 import java.util.Date;
 
+import static vn.hoangdung.util.Gender.*;
 
 
-public class UserRequestDTO implements Serializable{
-    
-    @NotBlank(message = "First name is required")
-    @Size(min = 1, max = 50)
+public class UserRequestDTO implements Serializable {
+
+    @NotBlank(message = "firstName must be not blank") // Khong cho phep gia tri blank
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @NotNull(message = "lastName must be not null") // Khong cho phep gia tri null
     private String lastName;
 
-    // @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone is not valid")
-    //Viết validate phone bằng annotation
-    @PhoneNumber
-    private String phone;
-
-    @Email(message = "Email is not valid")
+    @Email(message = "email invalid format") // Chi chap nhan nhung gia tri dung dinh dang email
     private String email;
 
+    //@Pattern(regexp = "^\\d{10}$", message = "phone invalid format")
+    @PhoneNumber(message = "phone invalid format")
+    private String phone;
+
     @NotNull(message = "dateOfBirth must be not null")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date dateOfBirth;
 
-    // @Pattern(regexp = "^ACTIVE|INACTIVE|NONE$", message = "status must be one in {ACTIVE, INACTIVE, NONE}")
-    @EnumPattern(regexp = "^ACTIVE|INACTIVE|NONE$", name = "status")
-    private UserStatus status;
-
-    @GenderSubset(anyOf = {Gender.MALE, Gender.FEMALE, Gender.OTHER}, message = "gender must be any of {anyOf}")
+    //@Pattern(regexp = "^male|female|other$", message = "gender must be one in {male, female, other}")
+    @GenderSubset(anyOf = {MALE, FEMALE, OTHER})
     private Gender gender;
+
+    @NotNull(message = "username must be not null")
+    private String username;
+
+    @NotNull(message = "password must be not null")
+    private String password;
 
     @NotNull(message = "type must be not null")
     @EnumValue(name = "type", enumClass = UserType.class)
     private String type;
-    
+
     @NotEmpty(message = "addresses can not empty")
     private Set<Address> addresses;
 
+    @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
+    private UserStatus status;
 
-
-    public UserRequestDTO(String firstName, String lastName, String phone, String email, Date dateOfBirth) {
+    public UserRequestDTO(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.phone = phone;
         this.email = email;
-        this.dateOfBirth = dateOfBirth;
+        this.phone = phone;
     }
-
 
     public static class Address {
         private String apartmentNumber;
@@ -144,65 +142,47 @@ public class UserRequestDTO implements Serializable{
         }
     }
 
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public String getEmail() {
+        return email;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public Date getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public Set<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(Set<Address> addresses) {
-        this.addresses = addresses;
-    }
-
-    public UserStatus getStatus() {
-        return status;
     }
 
     public Gender getGender() {
         return gender;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public String getType() {
         return type;
     }
 
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
 }
