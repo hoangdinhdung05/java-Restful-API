@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Configuration
-//@Profile({"dev", "test"})
+@Profile({"dev", "test"})
 public class OpenApiConfig {
 
     @Bean

@@ -1,6 +1,7 @@
 spring:
-  application:
-    name: hoangdung-sample-code
+  config:
+    activate:
+      on-profile: dev
 
 springdoc:
   api-docs:
@@ -9,7 +10,8 @@ springdoc:
     enabled: true
 openapi:
   service:
-    api-docs: backend-service-fullSkills
+    api-docs: api-service
     server: http://localhost:${server.port}
-    title: Backend service full skills
+    title: API Document
     version: 1.0.0
+
