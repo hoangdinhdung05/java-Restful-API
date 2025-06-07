@@ -1,10 +1,22 @@
 package vn.hoangdung.service;
 
 import vn.hoangdung.dto.request.UserRequestDTO;
+import vn.hoangdung.dto.response.PageResponse;
+import vn.hoangdung.dto.response.UserDetailResponse;
+import vn.hoangdung.util.UserStatus;
 
 public interface UserService {
 
-    int addUser(UserRequestDTO requestDTO);
+    long saveUser(UserRequestDTO request);
 
+    void updateUser(long userId, UserRequestDTO request);
 
+    void changeStatus(long userId, UserStatus status);
+
+    void deleteUser(long userId);
+
+    UserDetailResponse getUser(long userId);
+
+    PageResponse getAllUsers(int pageNo, int pageSize);
 }
+

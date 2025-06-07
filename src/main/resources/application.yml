@@ -1,15 +1,19 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: hoangdung-sample-code
+    name: backend-service-fullskills
+  profiles:
+    active: @spring.profiles.active@
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-openapi:
-  service:
-    api-docs: backend-service-fullSkills
-    server: http://localhost:${server.port}
-    title: Backend service full skills
-    version: 1.0.0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  level:
+    root: INFO
+    web: INFO

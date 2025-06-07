@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import vn.hoangdung.dto.validator.EnumPattern;
 import vn.hoangdung.dto.validator.EnumValue;
@@ -20,17 +19,16 @@ import java.util.Set;
 import java.util.Date;
 import static vn.hoangdung.util.Gender.*;
 
-
 @Getter
 public class UserRequestDTO implements Serializable {
 
-    @NotBlank(message = "firstName must be not blank")
+    @NotBlank(message = "firstName must be not blank") // Khong cho phep gia tri blank
     private String firstName;
 
-    @NotNull(message = "lastName must be not null")
+    @NotNull(message = "lastName must be not null") // Khong cho phep gia tri null
     private String lastName;
 
-    @Email(message = "email invalid format")
+    @Email(message = "email invalid format") // Chi chap nhan nhung gia tri dung dinh dang email
     private String email;
 
     //@Pattern(regexp = "^\\d{10}$", message = "phone invalid format")
@@ -56,11 +54,11 @@ public class UserRequestDTO implements Serializable {
     @EnumValue(name = "type", enumClass = UserType.class)
     private String type;
 
-    @NotEmpty(message = "addresses can not empty")
-    private Set<Address> addresses;
-
     @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
     private UserStatus status;
+
+    @NotEmpty(message = "addresses can not empty")
+    private Set<AddressDTO> addresses;
 
     public UserRequestDTO(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;
@@ -68,18 +66,4 @@ public class UserRequestDTO implements Serializable {
         this.email = email;
         this.phone = phone;
     }
-
-    @Getter
-    public static class Address {
-        private String apartmentNumber;
-        private String floor;
-        private String building;
-        private String streetNumber;
-        private String street;
-        private String city;
-        private String country;
-        private Integer addressType;
-
-    }
-
 }
