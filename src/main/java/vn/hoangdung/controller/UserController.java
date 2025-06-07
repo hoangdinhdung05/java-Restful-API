@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import vn.hoangdung.config.Translator;
 import vn.hoangdung.dto.request.UserRequestDTO;
 import vn.hoangdung.dto.response.ResponseFailure;
 import vn.hoangdung.dto.response.ResponseSuccess;
@@ -36,7 +37,7 @@ public class UserController {
 
         try {
             this.userService.addUser(user);
-            return new ResponseSuccess(HttpStatus.CREATED, "User added successfully,", 1);
+            return new ResponseSuccess(HttpStatus.CREATED, Translator.toLocale("user.add.success"), 1);
         } catch (Exception e) {
             //Bắt từ tầng service rồi ném ra exception bên controller
             return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());

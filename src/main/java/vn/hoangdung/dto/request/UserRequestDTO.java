@@ -69,7 +69,6 @@ public class UserRequestDTO implements Serializable {
         this.phone = phone;
     }
 
-    @Setter
     @Getter
     public static class Address {
         private String apartmentNumber;
