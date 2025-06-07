@@ -1,4 +1,4 @@
-package vn.hoangdung.util;
+package vn.hoangdung.dto.validator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package vn.hoangdung.util;
+package vn.hoangdung.dto.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

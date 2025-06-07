@@ -1,6 +1,7 @@
 package vn.hoangdung.controller;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Min;
 import vn.hoangdung.dto.request.UserRequestDTO;
 import vn.hoangdung.dto.response.ResponseFailure;
 import vn.hoangdung.dto.response.ResponseSuccess;
+import vn.hoangdung.service.UserService;
 
 
 @RestController
@@ -25,13 +27,18 @@ import vn.hoangdung.dto.response.ResponseSuccess;
 @Validated
 public class UserController {
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/")
     public ResponseSuccess addUser(@Valid @RequestBody UserRequestDTO user) {
         System.out.println("Request add user " + user.getFirstName());
 
         try {
+            this.userService.addUser(user);
             return new ResponseSuccess(HttpStatus.CREATED, "User added successfully,", 1);
         } catch (Exception e) {
+            //Bắt từ tầng service rồi ném ra exception bên controller
             return new ResponseFailure(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

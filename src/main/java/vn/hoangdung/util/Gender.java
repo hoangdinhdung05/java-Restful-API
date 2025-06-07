@@ -2,8 +2,6 @@ package vn.hoangdung.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public enum Gender {
     @JsonProperty("male")
     MALE,

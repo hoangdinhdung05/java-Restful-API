@@ -1,7 +1,9 @@
-package vn.hoangdung.util;
+package vn.hoangdung.dto.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import vn.hoangdung.util.Gender;
+
 import java.util.Arrays;
 
 public class GenderSubSetValidator implements ConstraintValidator<GenderSubset, Gender> {

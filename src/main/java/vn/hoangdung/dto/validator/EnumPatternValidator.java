@@ -1,4 +1,4 @@
-package vn.hoangdung.util;
+package vn.hoangdung.dto.validator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
