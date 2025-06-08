@@ -3,6 +3,8 @@ package vn.hoangdung.entity;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -54,6 +56,7 @@ public class User extends AbstractEntity {
     private UserStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @JsonIgnore
     private Set<Address> addresses = new HashSet<>();
 
     public void saveAddress(Address address) {

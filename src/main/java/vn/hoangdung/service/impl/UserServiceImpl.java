@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import vn.hoangdung.config.Translator;
 import vn.hoangdung.dto.request.AddressDTO;
 import vn.hoangdung.dto.request.UserRequestDTO;
 import vn.hoangdung.dto.response.PageResponse;
@@ -37,12 +36,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SearchRepository searchRepository;
 
-    /**
-     * Save new user to DB
-     *
-     * @param request
-     * @return userId
-     */
     @Override
     public long saveUser(UserRequestDTO request) {
         User user = User.builder()
@@ -56,7 +49,6 @@ public class UserServiceImpl implements UserService {
                 .password(request.getPassword())
                 .status(request.getStatus())
                 .type(UserType.valueOf(request.getType().toUpperCase()))
-                .addresses(convertToAddress(request.getAddresses()))
                 .build();
         request.getAddresses().forEach(a ->
                 user.saveAddress(Address.builder()
@@ -69,19 +61,14 @@ public class UserServiceImpl implements UserService {
                         .country(a.getCountry())
                         .addressType(a.getAddressType())
                         .build()));
+
         userRepository.save(user);
 
-        log.info("User has added successfully, userId={}", user.getId());
+        log.info("User has save!");
 
         return user.getId();
     }
 
-    /**
-     * Update user by userId
-     *
-     * @param userId
-     * @param request
-     */
     @Override
     public void updateUser(long userId, UserRequestDTO request) {
         User user = getUserById(userId);
@@ -101,41 +88,22 @@ public class UserServiceImpl implements UserService {
         user.setAddresses(convertToAddress(request.getAddresses()));
         userRepository.save(user);
 
-        log.info("User has updated successfully, userId={}", userId);
+        log.info("User updated successfully");
     }
 
-    /**
-     * Change status of user by userId
-     *
-     * @param userId
-     * @param status
-     */
     @Override
     public void changeStatus(long userId, UserStatus status) {
         User user = getUserById(userId);
         user.setStatus(status);
         userRepository.save(user);
-
-        log.info("User status has changed successfully, userId={}", userId);
+        log.info("status changed");
     }
 
-    /**
-     * Delete user by userId
-     *
-     * @param userId
-     */
     @Override
     public void deleteUser(long userId) {
         userRepository.deleteById(userId);
-        log.info("User has deleted permanent successfully, userId={}", userId);
     }
 
-    /**
-     * Get user detail by userId
-     *
-     * @param userId
-     * @return
-     */
     @Override
     public UserDetailResponse getUser(long userId) {
         User user = getUserById(userId);
@@ -143,23 +111,11 @@ public class UserServiceImpl implements UserService {
                 .id(userId)
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .dateOfBirth(user.getDateOfBirth())
-                .gender(user.getGender())
                 .phone(user.getPhone())
                 .email(user.getEmail())
-                .username(user.getUsername())
-                .status(user.getStatus())
-                .type(user.getType().name())
                 .build();
     }
 
-    /**
-     * Get all user per pageNo and pageSize
-     *
-     * @param pageNo
-     * @param pageSize
-     * @return
-     */
     @Override
     public PageResponse<?> getAllUsersWithSortBy(int pageNo, int pageSize, String sortBy) {
         int page = 0;
@@ -184,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
 
-        Page<User> users = (Page<User>) userRepository.findAll(pageable);
+        Page<User> users = userRepository.findAll(pageable);
         List<UserDetailResponse> response = users.stream().map(user -> UserDetailResponse.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -244,27 +200,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<?> getAllUsersAndSearchWithPagingAndSorting(int pageNo, int pageSize, String search, String sortBy) {
-        return searchRepository.searchUser(pageNo, pageSize, search, sortBy);
+    public PageResponse<?> getAllUsersAndSearchWithPagingAndSorting(int pageNo, int pageSize, String search, String sort) {
+        return searchRepository.searchUser(pageNo, pageSize, search, sort);
     }
 
-
-    /**
-     * Get user by userId
-     *
-     * @param userId
-     * @return User
-     */
-    private User getUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale("user.not.found")));
+    @Override
+    public PageResponse<?> advanceSearchWithCriteria(int pageNo, int pageSize, String sortBy, String address, String... search) {
+        return searchRepository.searchUserByCriteria(pageNo, pageSize, sortBy, address, search);
     }
 
-    /**
-     * Covert Set<AddressDTO> to Set<Address>
-     *
-     * @param addresses
-     * @return Set<Address>
-     */
     private Set<Address> convertToAddress(Set<AddressDTO> addresses) {
         Set<Address> result = new HashSet<>();
         addresses.forEach(a ->
@@ -280,5 +224,9 @@ public class UserServiceImpl implements UserService {
                         .build())
         );
         return result;
+    }
+
+    private User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

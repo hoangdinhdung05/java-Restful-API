@@ -23,6 +23,7 @@ import vn.hoangdung.dto.request.UserRequestDTO;
 import vn.hoangdung.dto.response.ResponseData;
 import vn.hoangdung.dto.response.ResponseError;
 import vn.hoangdung.dto.response.UserDetailResponse;
+import vn.hoangdung.exception.ResourceNotFoundException;
 import vn.hoangdung.service.UserService;
 import vn.hoangdung.util.UserStatus;
 
@@ -37,59 +38,58 @@ public class UserController {
 
     private final UserService userService;
 
-    private static final String ERROR_MESSAGE = "errorMessage={}";
-
     @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
     @PostMapping(value = "/")
-    public ResponseData<Long> addUser(@Valid @RequestBody UserRequestDTO request) {
-        log.info("Request add user, {} {}", request.getFirstName(), request.getLastName());
+    public ResponseData<Long> addUser(@Valid @RequestBody UserRequestDTO user) {
+        log.info("Request add user, {} {}", user.getFirstName(), user.getLastName());
 
         try {
-            long userId = userService.saveUser(request);
+            long userId = userService.saveUser(user);
             return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), userId);
         } catch (Exception e) {
+            log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Add user fail");
         }
     }
 
     @Operation(summary = "Update user", description = "Send a request via this API to update user")
     @PutMapping("/{userId}")
-    public ResponseData<Void> updateUser(@PathVariable @Min(1) long userId, @Valid @RequestBody UserRequestDTO request) {
+    public ResponseData<?> updateUser(@PathVariable @Min(1) long userId, @Valid @RequestBody UserRequestDTO user) {
         log.info("Request update userId={}", userId);
 
         try {
-            userService.updateUser(userId, request);
+            userService.updateUser(userId, user);
             return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.upd.success"));
         } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Update user fail");
         }
     }
 
     @Operation(summary = "Change status of user", description = "Send a request via this API to change status of user")
     @PatchMapping("/{userId}")
-    public ResponseData<Void> updateStatus(@Min(1) @PathVariable int userId, @RequestParam UserStatus status) {
+    public ResponseData<?> updateStatus(@Min(1) @PathVariable int userId, @RequestParam UserStatus status) {
         log.info("Request change status, userId={}", userId);
 
         try {
             userService.changeStatus(userId, status);
             return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.change.success"));
         } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Change status fail");
         }
     }
 
     @Operation(summary = "Delete user permanently", description = "Send a request via this API to delete user permanently")
     @DeleteMapping("/{userId}")
-    public ResponseData<Void> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") long userId) {
+    public ResponseData<?> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
         log.info("Request delete userId={}", userId);
 
         try {
             userService.deleteUser(userId);
             return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("user.del.success"));
         } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Delete user fail");
         }
     }
@@ -98,12 +98,10 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseData<UserDetailResponse> getUser(@PathVariable @Min(1) long userId) {
         log.info("Request get user detail, userId={}", userId);
-
         try {
-            UserDetailResponse user = userService.getUser(userId);
-            return new ResponseData<>(HttpStatus.OK.value(), "user", user);
-        } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            return new ResponseData<>(HttpStatus.OK.value(), "user", userService.getUser(userId));
+        } catch (ResourceNotFoundException e) {
+            log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
@@ -128,11 +126,22 @@ public class UserController {
 
     @Operation(summary = "Get list of users and search with paging and sorting by customize query", description = "Send a request via this API to get user list by pageNo, pageSize and sort by multiple column")
     @GetMapping("/list-user-and-search-with-paging-and-sorting")
-    public ResponseData<?> getAllUsersAndSearchWithPagingAndSorting(@RequestParam(required = false) int pageNo,
-                                                                    @RequestParam(required = false) int pageSize,
+    public ResponseData<?> getAllUsersAndSearchWithPagingAndSorting(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                                    @RequestParam(defaultValue = "20", required = false) int pageSize,
                                                                     @RequestParam(required = false) String search,
                                                                     @RequestParam(required = false) String sortBy) {
         log.info("Request get list of users and search with paging and sorting");
         return new ResponseData<>(HttpStatus.OK.value(), "users", userService.getAllUsersAndSearchWithPagingAndSorting(pageNo, pageSize, search, sortBy));
+    }
+
+    @Operation(summary = "Advance search query by criteria", description = "Send a request via this API to get user list by pageNo, pageSize and sort by multiple column")
+    @GetMapping("/advance-search-with-criteria")
+    public ResponseData<?> advanceSearchWithCriteria(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                     @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                                     @RequestParam(required = false) String sortBy,
+                                                     @RequestParam(required = false) String address,
+                                                     @RequestParam(defaultValue = "") String... search) {
+        log.info("Request advance search query by criteria");
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.advanceSearchWithCriteria(pageNo, pageSize, sortBy, address, search));
     }
 }
