@@ -20,7 +20,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import vn.hoangdung.config.Translator;
 import vn.hoangdung.dto.request.UserRequestDTO;
-import vn.hoangdung.dto.response.PageResponse;
 import vn.hoangdung.dto.response.ResponseData;
 import vn.hoangdung.dto.response.ResponseError;
 import vn.hoangdung.dto.response.UserDetailResponse;
@@ -111,16 +110,29 @@ public class UserController {
 
     @Operation(summary = "Get list of users per pageNo", description = "Send a request via this API to get user list by pageNo and pageSize")
     @GetMapping("/list")
-    public ResponseData<PageResponse> getAllUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                  @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize) {
-        log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
+    public ResponseData<?> getAllUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                       @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                       @RequestParam(required = false) String sortBy) {
+        log.info("Request get all of users");
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.getAllUsersWithSortBy(pageNo, pageSize, sortBy));
+    }
 
-        try {
-            PageResponse<?> users = userService.getAllUsers(pageNo, pageSize);
-            return new ResponseData<>(HttpStatus.OK.value(), "users", users);
-        } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    @Operation(summary = "Get list of users with sort by multiple columns", description = "Send a request via this API to get user list by pageNo, pageSize and sort by multiple column")
+    @GetMapping("/list-with-sort-by-multiple-columns")
+    public ResponseData<?> getAllUsersWithSortByMultipleColumns(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                                @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                                                @RequestParam(required = false) String... sorts) {
+        log.info("Request get all of users with sort by multiple columns");
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.getAllUsersWithSortByMultipleColumns(pageNo, pageSize, sorts));
+    }
+
+    @Operation(summary = "Get list of users and search with paging and sorting by customize query", description = "Send a request via this API to get user list by pageNo, pageSize and sort by multiple column")
+    @GetMapping("/list-user-and-search-with-paging-and-sorting")
+    public ResponseData<?> getAllUsersAndSearchWithPagingAndSorting(@RequestParam(required = false) int pageNo,
+                                                                    @RequestParam(required = false) int pageSize,
+                                                                    @RequestParam(required = false) String search,
+                                                                    @RequestParam(required = false) String sortBy) {
+        log.info("Request get list of users and search with paging and sorting");
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.getAllUsersAndSearchWithPagingAndSorting(pageNo, pageSize, search, sortBy));
     }
 }
