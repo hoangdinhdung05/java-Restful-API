@@ -1,5 +1,6 @@
 package vn.hoangdung.service;
 
+import org.springframework.data.domain.Pageable;
 import vn.hoangdung.dto.request.UserRequestDTO;
 import vn.hoangdung.dto.response.PageResponse;
 import vn.hoangdung.dto.response.UserDetailResponse;
@@ -25,5 +26,5 @@ public interface UserService {
 
     PageResponse<?> advanceSearchWithCriteria(int pageNo, int pageSize, String sortBy, String address, String... search);
 
+    PageResponse<?> advanceSearchWithSpecifications(Pageable pageable, String[] user, String[] address);
 }
-

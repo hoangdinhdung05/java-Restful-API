@@ -1,5 +1,6 @@
 package vn.hoangdung.dto.response;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,6 +32,7 @@ public class ResponseSuccess extends ResponseEntity<ResponseSuccess.Payload> {
         super(payload, headers, status);
     }
 
+    @Getter
     public static class Payload {
         private final int status;
         private final String message;
@@ -46,18 +48,6 @@ public class ResponseSuccess extends ResponseEntity<ResponseSuccess.Payload> {
             this.status = status;
             this.message = message;
             this.data = data;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Object getData() {
-            return data;
         }
     }
 }

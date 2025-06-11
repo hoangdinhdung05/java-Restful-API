@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import vn.hoangdung.dto.response.UserDetailResponse;
 import vn.hoangdung.exception.ResourceNotFoundException;
 import vn.hoangdung.service.UserService;
 import vn.hoangdung.util.UserStatus;
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 
 @RestController
@@ -143,5 +145,13 @@ public class UserController {
                                                      @RequestParam(defaultValue = "") String... search) {
         log.info("Request advance search query by criteria");
         return new ResponseData<>(HttpStatus.OK.value(), "users", userService.advanceSearchWithCriteria(pageNo, pageSize, sortBy, address, search));
+    }
+
+    @Operation(summary = "Advance search query by specifications", description = "Return list of users")
+    @GetMapping(path = "/advance-search-with-specification", produces = APPLICATION_JSON_VALUE)
+    public ResponseData<?> advanceSearchWithSpecifications(Pageable pageable,
+                                                           @RequestParam(required = false) String[] user,
+                                                           @RequestParam(required = false) String[] address) {
+        return new ResponseData<>(HttpStatus.OK.value(), "users", userService.advanceSearchWithSpecifications(pageable, user, address));
     }
 }

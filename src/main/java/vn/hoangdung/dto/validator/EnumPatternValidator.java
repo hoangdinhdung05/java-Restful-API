@@ -8,7 +8,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class EnumPatternValidator implements ConstraintValidator<EnumPattern, Enum<?>> {
-
     private Pattern pattern;
 
     @Override
